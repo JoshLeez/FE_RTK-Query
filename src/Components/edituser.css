@@ -1,0 +1,38 @@
+    .background-modal{
+        position: fixed;
+        background: rgba(24, 24, 27, 0.5);
+        width: 100%;
+        height: 100%;
+        top: 0;
+        left: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        pointer-events: auto;
+        z-index: 2;
+    }
+
+.edit-container{
+    background-color:rgba(255, 255, 255, 0.907);
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    width:500px;
+    padding:25px 0;
+    border-radius: 5px;
+    gap:30px;
+}
+
+.edit-container > input, select{
+    width:90%;
+}
+
+.edit-container >  button{
+    padding:10px;
+    width:100px;
+    margin:0 auto;
+    cursor: pointer;
+    font-size:15px;
+}
+

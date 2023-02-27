@@ -1,0 +1,9 @@
+.register-container{
+    display:flex;
+    flex-direction: column;
+    gap:20px;
+}
+
+.register-container > button{
+    height:30px;
+}

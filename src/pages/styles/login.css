@@ -1,0 +1,21 @@
+.login-container{
+    display:flex;
+    flex-direction: column;
+    gap:20px;
+}
+
+.login-container div input {
+    width:100%;
+}
+
+.login-container > button{
+    width:150px;
+    height:35px;
+    margin:auto;    
+}
+
+.register-nav{
+ padding:10px;
+ display:flex;   
+ gap:10px;
+}

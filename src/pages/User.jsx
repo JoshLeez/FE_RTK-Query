@@ -1,0 +1,115 @@
+import { 
+  useGetUsersQuery, 
+  useCreateUserMutation,
+  useDeleteUserMutation,
+  useUpdateUserMutation} from "../store/api/userApi";
+import { useForm } from "react-hook-form";
+import "./styles/user.css";
+import { useState } from "react";
+import EditUser from "../Components/EditUser";
+import jwtDecode from "jwt-decode";
+
+const User = () => {
+  const { data : user, isError, error, isLoading } = useGetUsersQuery();
+  const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
+  const [updateUser, { isLoading: isUpdating}] = useUpdateUserMutation();
+  const [modal ,setModal] = useState(false)
+  const [selected, setSelected] = useState()
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+  console.log(user)
+
+  const [createUser, { isLoading: isCreating }] = useCreateUserMutation()
+
+  if (isLoading) {
+    return <div>...Loading</div>;
+  }
+
+  if (isError) {
+    return <div>{error}</div>;
+  }
+
+  const onSubmit = async (value) =>{
+    if(isCreating){
+      return <div>...Loading</div>
+    }else{
+      await createUser(value);
+      reset()
+    }
+  }
+
+  const handleUpdate = async (value) =>{
+    await updateUser({id : selected.id, value})
+    setModal(false)
+  }
+
+  const handleDelete = async (id) =>{
+    await deleteUser(id)
+  }
+
+  const renderDeleteButton = (id) => {
+    if (isDeleting) {
+      return <button disabled>Deleting...</button>;
+    } else {
+      return <button onClick={() => handleDelete(id)}>Delete</button>;
+    }
+  };
+
+  return (
+    <div className="container">
+      <table>
+        <thead>
+          <tr>
+            <th>id</th>
+            <th>Nama</th>
+            <th>Email</th>
+            <th>Gender</th>
+            <th>Password</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+    {user.map((datas)=>{
+      return(
+        <tbody key={datas.id}>
+          <tr>
+            <td>{datas.id}</td>
+            <td>{datas.name}</td>
+            <td>{datas.email}</td>
+            <td>{datas.gender}</td>
+            <td></td>
+            <td className="action-btn">
+               <button onClick={()=>{setModal(!modal), setSelected(datas)}}>Edit</button>
+                {/* <button onClick={()=>handleDelete(datas.id)}>Delete</button> */}
+                {renderDeleteButton(datas.id)}
+            </td>
+          </tr>
+        </tbody>
+       )})} 
+       </table>
+      <form className="form-container" onSubmit={handleSubmit(onSubmit)}>
+        <input type="text" {...register("name")} placeholder="insert name"/>
+        <input  type="text"
+                  {...register("email", {
+                    required: true,
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "invalid email address",
+                    },
+                  })} placeholder="insert email"/>
+        {errors.email && <span>Format Email Salah</span>}
+        <select {...register("gender")}>
+          <option>Male</option>
+          <option>Female</option>
+        </select>
+        <button type="submit">Add User</button>
+      </form>
+      {modal && <EditUser handleUpdate={handleUpdate} user={selected} setModal={setModal}/>}
+    </div>
+  );
+};
+
+export default User;

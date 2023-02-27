@@ -1,0 +1,11 @@
+.App{
+    height:100vh;
+    display:flex;
+    justify-content: center;
+    align-items: center;
+}
+
+table,td,th{
+    border:2px solid black;
+    padding:5px;
+}
