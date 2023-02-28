@@ -1,13 +1,15 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
+import { setAccessToken } from "../slice/authSlice";
 
 export const userApi = createApi({
   reducerPath: "userApi",
   baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000" ,
+  credentials: "include",
   tagTypes: ['Users'],
   prepareHeaders: (headers, { getState }) => {
     // Get the access token from your store
     const { accessToken } = getState().auth;
-    console.log('Authorization', `Bearer ${accessToken}`)
+    // console.log('Authorization', `Bearer ${accessToken}`) 
     // If there is an access token, set the authorization header
     if (accessToken) {
       headers.set('Authorization', `Bearer ${accessToken}`);
@@ -30,6 +32,25 @@ export const userApi = createApi({
         method : "POST",
         body : value,
       })
+    }),
+    logOutUser : builder.mutation({
+      query: () =>({
+          url : "/logout",
+          method :"DELETE"
+      }),
+      invalidatesTags: ["Users"],
+      async onQueryStarted(arg, {dispatch, queryFulfilled}){
+        try{
+            const {data} = await queryFulfilled;
+            console.log(data);
+            dispatch(setAccessToken(null))
+            setTimeout(() => {
+              dispatch(userApi.util.resetApiState())
+          }, 1000)
+        }catch(err){  
+          console.log(err)  
+        }
+      }
     }),
     createUser: builder.mutation({
       query: (value) => ({
@@ -62,4 +83,5 @@ export const {
     useCreateUserMutation,
     useDeleteUserMutation,
     useUpdateUserMutation,
-    useLoginUserMutation} = userApi;
+    useLoginUserMutation,
+    useLogOutUserMutation} = userApi;
