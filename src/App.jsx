@@ -5,17 +5,21 @@ import { Route, Routes } from "react-router-dom";
 import Login from "./pages/auth/Login";
 import Register from "./pages/auth/Register";
 import LayOut from "./Components/LayOut";
-import { useSelector } from "react-redux";
-import { selectAccessToken } from "./store/slice/authSlice";
+import { useDispatch, useSelector } from "react-redux";
+import { selectAccessToken, setUser } from "./store/slice/authSlice";
 import PageError from "./pages/PageError";
+import jwtDecode from "jwt-decode";
 
 function App() {
   const accessToken = useSelector(selectAccessToken);
   const [token, setToken] = useState();
+  const dispatch = useDispatch()
+  const userToken = accessToken && jwtDecode(accessToken);
   useEffect(() => {
     if (!accessToken) {
       setToken(true);
-    } else if (accessToken) {
+    } else if (accessToken){
+      dispatch(setUser(userToken))
       setToken(false);
     }
   }, [accessToken, token]);

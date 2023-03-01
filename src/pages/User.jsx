@@ -10,14 +10,17 @@ import { useState } from "react";
 import EditUser from "../Components/EditUser";
 import jwtDecode from "jwt-decode";
 import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectUser } from "../store/slice/authSlice";
 
 const User = () => {
-  const { data : user, isError, error, isLoading } = useGetUsersQuery();
+  const { data : users, isError, error, isLoading } = useGetUsersQuery();
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [updateUser, { isLoading: isUpdating}] = useUpdateUserMutation();
   const [logOutUser, { isLoading : isLogOut, isError : isLogOutError, error : errorLogout}] = useLogOutUserMutation();
   const [modal ,setModal] = useState(false)
   const [selected, setSelected] = useState()
+  const {name} = useSelector(selectUser);
   const {
     register,
     handleSubmit,
@@ -31,8 +34,10 @@ const User = () => {
     return <div>...Loading</div>;
   }
 
+  console.log(error)
+
   if (isError) {
-    return <div>{error}</div>;
+    return <div>{error?.data}</div>;
   }
 
   const onSubmit = async (value) =>{
@@ -79,6 +84,7 @@ const User = () => {
 
   return (
     <div className="container">
+      <p>Welcome Back {name}</p>
       <table>
         <thead>
           <tr>
@@ -89,7 +95,7 @@ const User = () => {
             <th>Action</th>
           </tr>
         </thead>
-    {user.map((datas)=>{
+    {users && users.map((datas)=>{
       return(
         <tbody key={datas.id}>
           <tr>
