@@ -1,5 +1,5 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { setAccessToken } from "../slice/authSlice";
+import { logOut, setUser } from "../slice/authSlice";
 
 export const userApi = createApi({
   reducerPath: "userApi",
@@ -24,14 +24,15 @@ export const userApi = createApi({
       // this is used when when we want to validate and update UI
       providesTags:["Users"],
       //this is used to specify which object we wanna show
-      transformResponse: (response) => response.data,
+      transformResponse: (response) => response.data
     }),
     loginUser : builder.mutation({
       query: (value) => ({
         url : "/login",
         method : "POST",
         body : value,
-      })
+      }),
+      invalidatesTags: ["Users"],
     }),
     logOutUser : builder.mutation({
       query: () =>({
@@ -43,7 +44,8 @@ export const userApi = createApi({
         try{
             const {data} = await queryFulfilled;
             console.log(data);
-            dispatch(setAccessToken(null))
+            setTimeout(() =>{
+              dispatch(logOut())})
             setTimeout(() => {
               dispatch(userApi.util.resetApiState())
           }, 1000)
@@ -52,6 +54,12 @@ export const userApi = createApi({
         }
       }
     }),
+    getUserByLogin : builder.query({
+      query: ()=> "/users-by-login",
+      providesTags: ["Users"],
+      transformResponse : (response) => response
+    })
+    ,
     createUser: builder.mutation({
       query: (value) => ({
         url: "/users",
@@ -84,4 +92,5 @@ export const {
     useDeleteUserMutation,
     useUpdateUserMutation,
     useLoginUserMutation,
-    useLogOutUserMutation} = userApi;
+    useLogOutUserMutation,
+    useGetUserByLoginQuery} = userApi;

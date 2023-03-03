@@ -1,10 +1,10 @@
 import { createSlice } from "@reduxjs/toolkit";
 import jwtDecode from "jwt-decode";
+import  {useGetUsersQuery, userApi}  from "../api/userApi";
 
 const initialState = {
     user: null,
     accessToken : null,
-    refreshToken : null
 }
 
 const authSlice = createSlice({
@@ -16,11 +16,20 @@ const authSlice = createSlice({
         },
         setAccessToken: (state, action) =>{
             state.accessToken = action.payload;
-        }
-    }
+        },
+        logOut: () => initialState
+    },
+    //extraReducers addMatcher when the api success/fulfilled it will return true and we can
+    //we can get value of the api that been fulfilled and store it to the state
+    extraReducers: (builder) => {
+        builder.addMatcher(userApi.endpoints.loginUser.matchFulfilled, (state, action) => {
+            const token = jwtDecode(action.payload.accessToken);
+            state.user = token // update the users field with the fetched data
+        })
+      }, 
 })
 
-export const { setUser, setAccessToken, setRefreshToken } = authSlice.actions;
+export const { setUser, setAccessToken, logOut } = authSlice.actions;
 
 export default authSlice.reducer
 

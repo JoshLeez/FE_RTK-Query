@@ -3,7 +3,8 @@ import {
   useCreateUserMutation,
   useDeleteUserMutation,
   useUpdateUserMutation,
-  useLogOutUserMutation} from "../store/api/userApi";
+  useLogOutUserMutation,
+  useGetUserByLoginQuery} from "../store/api/userApi";
 import { useForm } from "react-hook-form";
 import "./styles/user.css";
 import { useState } from "react";
@@ -18,16 +19,16 @@ const User = () => {
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [updateUser, { isLoading: isUpdating}] = useUpdateUserMutation();
   const [logOutUser, { isLoading : isLogOut, isError : isLogOutError, error : errorLogout}] = useLogOutUserMutation();
+  const { data : user} = useGetUserByLoginQuery();
   const [modal ,setModal] = useState(false)
   const [selected, setSelected] = useState()
-  const {name} = useSelector(selectUser);
+  // const {name} = useSelector(selectUser);
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
   } = useForm();
-
   const [createUser, { isLoading: isCreating }] = useCreateUserMutation()
   const navigate = useNavigate()
   if (isLoading) {
@@ -84,7 +85,7 @@ const User = () => {
 
   return (
     <div className="container">
-      <p>Welcome Back {name}</p>
+      <p>Welcome Back {user.name}</p>
       <table>
         <thead>
           <tr>
