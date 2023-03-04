@@ -26,6 +26,13 @@ export const userApi = createApi({
       //this is used to specify which object we wanna show
       transformResponse: (response) => response.data
     }),
+    registerUser : builder.mutation({
+      query : (value) =>({
+        url : "/register",
+        method : "POST",
+        body : value,
+      })
+    }),
     loginUser : builder.mutation({
       query: (value) => ({
         url : "/login",
@@ -87,6 +94,7 @@ export const userApi = createApi({
 });
 
 export const { 
+    useRegisterUserMutation,
     useGetUsersQuery, 
     useCreateUserMutation,
     useDeleteUserMutation,

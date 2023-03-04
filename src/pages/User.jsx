@@ -19,10 +19,11 @@ const User = () => {
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [updateUser, { isLoading: isUpdating}] = useUpdateUserMutation();
   const [logOutUser, { isLoading : isLogOut, isError : isLogOutError, error : errorLogout}] = useLogOutUserMutation();
-  const { data : user} = useGetUserByLoginQuery();
+  const { data : user, isLoading : isLoginByUser} = useGetUserByLoginQuery();
+  console.log(user)
   const [modal ,setModal] = useState(false)
   const [selected, setSelected] = useState()
-  // const {name} = useSelector(selectUser);
+  // const {name} = useSelector(selectUser); 
   const {
     register,
     handleSubmit,
@@ -33,6 +34,10 @@ const User = () => {
   const navigate = useNavigate()
   if (isLoading) {
     return <div>...Loading</div>;
+  }
+
+  if (isLoginByUser){
+    return <div>...Loading</div>
   }
 
   console.log(error)
