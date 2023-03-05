@@ -6,8 +6,9 @@ import { useDispatch } from "react-redux";
 import { setAccessToken } from "../../store/slice/authSlice";
 
 const Login = () => {
-  const [loginUser, { isLoading : isLogin}] = useLoginUserMutation();
+  const [loginUser, { isLoading : isLogin, isError : isLoginError, error}] = useLoginUserMutation();
   const dispatch = useDispatch();
+
   const {
     register,
     handleSubmit,
@@ -28,6 +29,7 @@ const Login = () => {
 
   return (
     <div>
+      {error?.data?.message}
       <form onSubmit={handleSubmit(handleLogin)} className="login-container">
         <div>
           <h3>Email</h3>

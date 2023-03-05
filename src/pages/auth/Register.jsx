@@ -12,7 +12,6 @@ const Register = () => {
   } = useForm();
   const [registerUser, {isLoading : isRegister}] = useRegisterUserMutation();
   const navigate = useNavigate()
-
   const onSubmit = async(value)=>{
     if(isRegister){
       return <div>...Loading</div>
@@ -52,7 +51,7 @@ const Register = () => {
         </div>
         <div>
           <h3>Confirim Password</h3>
-          <input {...register("confirmPassword", { required : true,
+          <input type="password" {...register("confirmPassword", { required : true,
           validate: (val)=>{
             if(watch("password") != val){
               return "Confirm Password and Password not the same"
