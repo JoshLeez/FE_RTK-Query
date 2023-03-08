@@ -20,7 +20,7 @@ const EditUser = ({ user, setModal, handleUpdate }) => {
   useEffect(() => {
     let handler = (event) => {
       if (!menuRef.current.contains(event.target)) {
-        // console.log(event.target);
+        console.log(event.target);
         setModal(false);
       }
     };

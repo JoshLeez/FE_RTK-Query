@@ -1,23 +1,50 @@
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
-import { logOut, setUser } from "../slice/authSlice";
+import jwtDecode from "jwt-decode";
+import { logOut, selectAccessToken, setAccessToken, setUser } from "../slice/authSlice";
+
+const baseQuery = fetchBaseQuery({ baseUrl: "http://localhost:5000" ,
+  credentials: "include",
+  prepareHeaders: (headers, { getState }) => {
+      // Get the access token from your store
+      const { accessToken } = getState().auth;
+      // console.log('Authorization', `Bearer ${accessToken}`) 
+      // If there is an access token, set the authorization header
+      if (accessToken) {
+        headers.set('Authorization', `Bearer ${accessToken}`);
+      }
+      return headers;
+   }
+});
+
+const baseQueryWithReAuth = async(args, api, extraOptions) =>{
+  // console.log(args) // request url, method, body
+  // console.log(api) // signal, dispatch, getState()
+  // console.log(extraOptions) //custom like {shout: true}
+
+    let result = await baseQuery(args, api, extraOptions)
+    console.log(result)
+    if(result?.error?.status === 401){
+      console.log("sending refresh token");
+      
+      const refreshResult = await baseQuery("/token", api, extraOptions)
+      if(refreshResult?.data){
+        api.dispatch(setAccessToken(refreshResult.data.accessToken))
+
+        result = await baseQuery(args, api, extraOptions)
+      }else if(refreshResult?.error?.status === 403){
+          refreshResult.error.data.message = "Your refresh Token session eneded, please login again"
+          dispatch(logOut())
+        return refreshResult
+      }
+    }
+    console.log(result)
+    return result
+}
 
 export const userApi = createApi({
   reducerPath: "userApi",
-  baseQuery: fetchBaseQuery({ baseUrl: "http://localhost:5000" ,
-  credentials: "include",
-  tagTypes: ['Users'],
-  prepareHeaders: (headers, { getState }) => {
-    // Get the access token from your store
-    const { accessToken } = getState().auth;
-    // console.log('Authorization', `Bearer ${accessToken}`) 
-    // If there is an access token, set the authorization header
-    if (accessToken) {
-      headers.set('Authorization', `Bearer ${accessToken}`);
-    }
-
-    return headers;
-  }
-  }),
+  baseQuery: baseQueryWithReAuth,
+  tagTypes: ['Users'],  
   endpoints: (builder) => ({
     getUsers: builder.query({
       query: () => "/users",
@@ -89,9 +116,26 @@ export const userApi = createApi({
         body : value
       }),
       invalidatesTags: ["Users"]
-    })
+    }),
+    userRefresh : builder.mutation({
+      query: () =>({
+          url: "/token",
+          method : "GET",
+      }),
+      // async onQueryStarted(arg, {dispatch, queryFulfilled, getState}){
+      //   try{
+      //     const {data} = await queryFulfilled
+      //     console.log(data)
+      //     const {accessToken} = data;
+      //     dispatch(setAccessToken(accessToken))
+      //   }catch(err){
+      //     console.log(err.message)
+      //   }
+      // }
+    }),
   }),
 });
+
 
 export const { 
     useRegisterUserMutation,
@@ -101,4 +145,5 @@ export const {
     useUpdateUserMutation,
     useLoginUserMutation,
     useLogOutUserMutation,
-    useGetUserByLoginQuery} = userApi;
+    useGetUserByLoginQuery,
+    useUserRefreshMutation} = userApi;

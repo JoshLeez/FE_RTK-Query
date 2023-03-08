@@ -26,6 +26,10 @@ const authSlice = createSlice({
             const token = jwtDecode(action.payload.accessToken);
             state.user = token // update the users field with the fetched data
         })
+    //     builder.addMatcher(userApi.endpoints.userRefresh.matchFulfilled, (state, action) =>{
+            
+    //         const {exp} = jwtDecode(state.accessToken) 
+    //     }) 
       }, 
 })
 

@@ -40,12 +40,6 @@ const User = () => {
     return <div>...Loading</div>
   }
 
-  console.log(error)
-
-  if (isError) {
-    return <div>{error?.data}</div>;
-  }
-
   const onSubmit = async (value) =>{
     if(isCreating){
       return <div>...Loading</div>
@@ -54,7 +48,6 @@ const User = () => {
       reset()
     }
   }
-
 
   const logOutHandler = async () =>{
     if(isLogOut){
@@ -65,6 +58,11 @@ const User = () => {
       await logOutUser();
       navigate("/")
     }
+
+  }
+
+  if (isError) {
+  return <div>{error?.data?.message}</div>
   }
 
   const handleUpdate = async (value) =>{
