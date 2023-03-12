@@ -14,22 +14,28 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+
+
   const navigate = useNavigate()
   const handleLogin = async (value) => {
-    if (isLogin) {
-      // show loading indicator
-      return <div>...Loading</div>;
-    } else {
-      // call loginUser mutation and navigate to /user on success
-      const {accessToken} = await loginUser(value).unwrap();
-      dispatch(setAccessToken(accessToken))
-      navigate("/user");
+    try{
+      if (isLogin) {
+        // show loading indicator
+        return <div>...Loading</div>;
+      } else {
+        // call loginUser mutation and navigate to /user on success
+        const {accessToken} = await loginUser(value).unwrap();
+        dispatch(setAccessToken(accessToken))
+        navigate("/user");
+      }
+    }catch(err){
+      console.log(err)
     }
   };
 
   return (
     <div>
-      {error?.data?.message}
+      {isLoginError && error?.data?.message}
       <form onSubmit={handleSubmit(handleLogin)} className="login-container">
         <div>
           <h3>Email</h3>

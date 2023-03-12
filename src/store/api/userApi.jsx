@@ -22,7 +22,7 @@ const baseQueryWithReAuth = async(args, api, extraOptions) =>{
   // console.log(extraOptions) //custom like {shout: true}
 
     let result = await baseQuery(args, api, extraOptions)
-    console.log(result)
+
     if(result?.error?.status === 401){
       console.log("sending refresh token");
       
@@ -37,7 +37,6 @@ const baseQueryWithReAuth = async(args, api, extraOptions) =>{
         return refreshResult
       }
     }
-    console.log(result)
     return result
 }
 
