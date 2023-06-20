@@ -30,7 +30,7 @@ const User = () => {
     reset,
     formState: { errors },
   } = useForm();
-  const [createUser, { isLoading: isCreating }] = useCreateUserMutation()
+  const [createUser, { isLoading: isCreating, isError: creatingError, error : errorCreate }] = useCreateUserMutation()
   const navigate = useNavigate()
   if (isLoading) {
     return <div>...Loading</div>;
@@ -41,19 +41,24 @@ const User = () => {
   }
 
   const onSubmit = async (value) =>{
-    if(isCreating){
-      return <div>...Loading</div>
-    }else{
-      await createUser(value);
-      reset()
-    }
+   try{
+        if(isCreating){
+          return <div>...Loading</div>
+        }
+        else{
+          await createUser(value);
+          reset()
+        }
+      }catch(creatingError){
+         console.log(errorCreate?.data?.error)
+        }
   }
 
   const logOutHandler = async () =>{
     if(isLogOut){
       return <div>...Loading</div>
     }else if(isLogOutError){
-      console.log(errorLogout)
+      return console.log(errorLogout)
     }else{
       await logOutUser();
       navigate("/")
@@ -127,11 +132,12 @@ const User = () => {
                       message: "invalid email address",
                     },
                   })} placeholder="insert email"/>
-        {errors.email && <span>Format Email Salah</span>}
+        {errors.email  && <span>Format Email Salah</span>}
         <select {...register("gender")}>
-          <option>Male</option>
-          <option>Female</option>
-        </select>
+          <option value="Male">Male</option>
+          <option value="Female">Female</option>
+        </select> 
+        {creatingError && <span>{errorCreate?.data?.error}</span>}
         <button type="submit">Add User</button>
       </form>
       {modal && <EditUser handleUpdate={handleUpdate} user={selected} setModal={setModal}/>}

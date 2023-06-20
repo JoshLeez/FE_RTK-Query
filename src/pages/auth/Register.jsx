@@ -8,7 +8,7 @@ const Register = () => {
     register,
     handleSubmit,
     watch,
-    formState: {  errors },
+    formState: { errors },
   } = useForm();
   const [registerUser, {isLoading : isRegister}] = useRegisterUserMutation();
   const navigate = useNavigate()
