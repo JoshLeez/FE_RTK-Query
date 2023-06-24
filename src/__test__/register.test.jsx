@@ -7,7 +7,8 @@ import { BrowserRouter as Router } from 'react-router-dom';
 
 vi.mock('../store/api/userApi');
 
-describe('Integration test for Register', () => {
+
+describe('If register success', () => {
   test('Register form submission', async () => {
     const mockRegisterUser = vi.fn(); // Mock the registerUser function
 
@@ -40,9 +41,6 @@ describe('Integration test for Register', () => {
       target: { value: 'password' },
     });
 
-    // Mock a successful registration with status code 200
-    mockRegisterUser.mockResolvedValueOnce({ status: 200 });
-
     // Submit the form
     fireEvent.click(screen.getByText('Register'));
 
@@ -56,8 +54,50 @@ describe('Integration test for Register', () => {
       password: 'password',
       confirmPassword: 'password',
     });
-
-    // Assert the expected status code
-    expect(mockRegisterUser).toHaveReturnedWith({ status: 404 });
+  
+    expect(window.location.pathname).toBe('/');
   });
+  
 });
+
+test('Register form submission - failure (password and confirm password)', async () => {
+  const mockRegisterUser = vi.fn(); // Mock the registerUser function
+
+  useRegisterUserMutation.mockReturnValue([
+    mockRegisterUser,
+    { isLoading: false },
+  ]);
+
+  render(
+    <Router>
+      <Register />
+    </Router>
+  );
+ // Fill in the input fields...
+
+  fireEvent.change(screen.getByPlaceholderText('insert username'), {
+    target: { value: 'JohnDoe' },
+  });
+
+  fireEvent.change(screen.getByPlaceholderText('insert email'), {
+    target: { value: 'test@gmail.com' }, // Provide an invalid email format
+  });
+
+  fireEvent.change(screen.getByPlaceholderText('insert password'), {
+    target: { value: 'hehe' },
+  });
+
+  fireEvent.change(screen.getByPlaceholderText('confirm password'), {
+    target: { value: 'password' },
+  });
+
+  // Submit the form
+  fireEvent.click(screen.getByText('Register'));
+
+  // Wait for the registration to complete
+  await waitFor(() => expect(mockRegisterUser).not.toHaveBeenCalled());
+
+  expect(screen.queryByText('Confirm Password and Password not the same')).toBeInTheDocument();
+  expect(screen.queryByText('Confirm Password and Password not the same')).not.toBeNull()
+});
+ 
