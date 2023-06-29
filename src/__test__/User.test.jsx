@@ -2,7 +2,7 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import { BrowserRouter as Router } from 'react-router-dom';
 import { vi } from 'vitest';
 import User from '../pages/User';
-import { useCreateUserMutation } from '../store/api/userApi';
+import { useCreateUserMutation, useGetUsersQuery } from '../store/api/userApi';
 import { Provider } from 'react-redux';
 import store from '../store/store';
 import { setAccessToken } from '../store/slice/authSlice';
@@ -28,7 +28,7 @@ describe('testing CREATE user', () => {
       createUserMock,
       { isLoading: false, isError: false, error: null },
     ]);
-
+    
     store.dispatch(setAccessToken('your-mock-token'));
 
     render(
@@ -38,6 +38,20 @@ describe('testing CREATE user', () => {
         </Router>
       </Provider>
     );
+    
+        useGetUsersQuery.mockReturnValue({
+          isLoading: false,
+          isError: false,
+          data: [
+            {
+              id: 1,
+              name: 'Precious',
+              email: 'golum@gmail.com',
+              gender: 'Male',
+            },
+          ],
+        });
+      
 
     
     await waitFor(() => {
@@ -63,5 +77,9 @@ describe('testing CREATE user', () => {
       email: 'golum@gmail.com',
       gender: 'Male',
     });
+
+    expect(screen.getByText(/Precious/i)).toBeInTheDocument();
+    expect(screen.getByText(/golum@gmail.com/i)).toBeInTheDocument();
+    expect(screen.getByText(/Male/i, {selector : "td"})).toBeInTheDocument();
   });
 });
