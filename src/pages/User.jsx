@@ -33,17 +33,17 @@ const User = () => {
   const [createUser, { isLoading: isCreating, isError: creatingError, error : errorCreate }] = useCreateUserMutation()
   const navigate = useNavigate()
   if (isLoading) {
-    return <div>...Loading</div>;
+    return <div>...Loading Get User</div>;
   }
 
   if (isLoginByUser){
-    return <div>...Loading</div>
+    return <div>...Loading Login</div>
   }
 
   const onSubmit = async (value) =>{
    try{
         if(isCreating){
-          return <div>...Loading</div>
+          return <div>...Loading Creating</div>
         }
         else{
           await createUser(value);
@@ -56,7 +56,7 @@ const User = () => {
 
   const logOutHandler = async () =>{
     if(isLogOut){
-      return <div>...Loading</div>
+      return <div>...Loading Logout</div>
     }else if(isLogOutError){
       return console.log(errorLogout)
     }else{
@@ -93,7 +93,7 @@ const User = () => {
 
   return (
     <div className="container">
-      <p>Welcome Back {user.name}</p>
+      <p>Welcome Back {user && user.name}</p>
       <table>
         <thead>
           <tr>
@@ -133,7 +133,7 @@ const User = () => {
                     },
                   })} placeholder="insert email"/>
         {errors.email  && <span>Format Email Salah</span>}
-        <select {...register("gender")}>
+        <select data-testid="select-option" {...register("gender")}>
           <option value="Male">Male</option>
           <option value="Female">Female</option>
         </select> 
