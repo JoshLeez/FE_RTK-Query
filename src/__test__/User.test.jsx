@@ -13,7 +13,16 @@ vi.mock("../store/api/userApi", async () => {
   return {
     ...actual,
     useGetUsersQuery : vi.fn().mockReturnValue({
-      isLoading : false,
+      isLoading: false,
+      isError: false,
+      data: [
+        {
+          id: 1,
+          name: 'Precious',
+          email: 'golum@gmail.com',
+          gender: 'Male',
+        },
+      ],
     }),
     useCreateUserMutation: vi.fn(),
   };
@@ -38,20 +47,6 @@ describe('testing CREATE user', () => {
         </Router>
       </Provider>
     );
-    
-        useGetUsersQuery.mockReturnValue({
-          isLoading: false,
-          isError: false,
-          data: [
-            {
-              id: 1,
-              name: 'Precious',
-              email: 'golum@gmail.com',
-              gender: 'Male',
-            },
-          ],
-        });
-      
 
     
     await waitFor(() => {
