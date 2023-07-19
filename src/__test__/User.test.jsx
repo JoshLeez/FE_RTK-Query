@@ -38,7 +38,7 @@ describe('testing CREATE user', () => {
       { isLoading: false, isError: false, error: null },
     ]);
     
-    store.dispatch(setAccessToken('your-mock-token'));
+    store.dispatch(setAccessToken('your-mock-token')); //This wasn't needed
 
     render(
       <Provider store={store}>
@@ -48,7 +48,6 @@ describe('testing CREATE user', () => {
       </Provider>
     );
 
-    
     await waitFor(() => {
       expect(screen.getByText(/Add User/i)).toBeInTheDocument();
     });

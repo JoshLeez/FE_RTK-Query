@@ -22,7 +22,7 @@ function App() {
       // dispatch(setUser(userToken))
       setToken(false);
     }
-  }, [accessToken, token]);
+  }, [accessToken]);
   return (
     <div className="App">
       <Routes>

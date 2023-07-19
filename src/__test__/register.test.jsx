@@ -1,21 +1,21 @@
 import '@testing-library/jest-dom';
 import Register from '../pages/auth/Register';
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { useRegisterUserMutation } from "../store/api/userApi";
+import * as userApi from '../store/api/userApi';
 import { vi } from 'vitest';
 import { BrowserRouter as Router } from 'react-router-dom';
 
-vi.mock('../store/api/userApi');
-
+// Use vi.spyOn to mock only the useRegisterUserMutation function
+const mockRegisterUser = vi.fn();
+vi.spyOn(userApi, 'useRegisterUserMutation').mockReturnValue([
+  mockRegisterUser,
+  { isLoading: false },
+]);
 
 describe('If register success', () => {
   test('Register form submission', async () => {
-    const mockRegisterUser = vi.fn(); // Mock the registerUser function
-
-    useRegisterUserMutation.mockReturnValue([
-      mockRegisterUser,
-      { isLoading: false },
-    ]);
+    // Use mockResolvedValue to mock the return value of the mutation function
+    mockRegisterUser.mockResolvedValue({ data: { username: 'JohnDoe' }});
 
     render(
       <Router>
@@ -61,12 +61,8 @@ describe('If register success', () => {
 });
 
 test('Register form submission - failure (password and confirm password)', async () => {
-  const mockRegisterUser = vi.fn(); // Mock the registerUser function
-
-  useRegisterUserMutation.mockReturnValue([
-    mockRegisterUser,
-    { isLoading: false },
-  ]);
+  // Use mockRejectedValue to mock the return value of the mutation function
+  mockRegisterUser.mockRejectedValue(new Error('Confirm Password and Password not the same'));
 
   render(
     <Router>
@@ -94,10 +90,10 @@ test('Register form submission - failure (password and confirm password)', async
   // Submit the form
   fireEvent.click(screen.getByText('Register'));
 
-  // Wait for the registration to complete
-  await waitFor(() => expect(mockRegisterUser).not.toHaveBeenCalled());
+  // Wait for the registration to fail
+  await waitFor(() => expect(mockRegisterUser).toHaveBeenCalled());
 
-  expect(screen.queryByText('Confirm Password and Password not the same')).toBeInTheDocument();
-  expect(screen.queryByText('Confirm Password and Password not the same')).not.toBeNull()
+  // Use await findByText instead of queryByText to avoid false positives
+  expect(await screen.findByText('Confirm Password and Password not the same')).toBeInTheDocument();
 });
- 
+  

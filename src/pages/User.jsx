@@ -19,8 +19,8 @@ const User = () => {
   const [deleteUser, { isLoading: isDeleting }] = useDeleteUserMutation();
   const [updateUser, { isLoading: isUpdating}] = useUpdateUserMutation();
   const [logOutUser, { isLoading : isLogOut, isError : isLogOutError, error : errorLogout}] = useLogOutUserMutation();
-  const { data : user, isLoading : isLoginByUser} = useGetUserByLoginQuery();
-  console.log(user)
+  const { data : user, isLoading : isLoginByUser} = useGetUserByLoginQuery({skip : true});
+  console.log(users)
   const [modal ,setModal] = useState(false)
   const [selected, setSelected] = useState()
   // const {name} = useSelector(selectUser); 
